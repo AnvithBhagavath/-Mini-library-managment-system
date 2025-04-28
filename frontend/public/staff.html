@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff Login Form</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
+
+    :root {
+      --white-color: hsl(0, 0%, 100%);
+      --black-color: hsl(0, 7%, 94%);
+      --dark-color: hsl(210, 15%, 21%);
+      --body-font: "Poppins", sans-serif;
+      --h1-font-size: 1.75rem;
+      --normal-font-size: 1rem;
+      --small-font-size: 0.813rem;
+      --font-medium: 500;
+    }
+
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    body,
+    input,
+    button {
+      font-size: var(--normal-font-size);
+      font-family: var(--body-font);
+    }
+
+    body {
+      background-image: url('book.png');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: var(--white-color);
+    }
+
+    input,
+    button {
+      border: none;
+      outline: none;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .background-blur {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background-image: url('lib.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(4px);
+      z-index: -1;
+    }
+
+    .login {
+      position: relative;
+      height: 100vh;
+      display: grid;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login__form {
+      background-color: rgba(0, 0, 0, 0.7);
+      border: 3px solid var(--black-color);
+      padding: 2.5rem 1.5rem;
+      border-radius: 1rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(167, 29, 29, 0.15);
+      width: 90%;
+      max-width: 432px;
+    }
+
+    .login__form {
+      width: 520px;
+      padding: 4rem 3rem 3.5rem;
+      border-radius: 1.5rem;
+    }
+
+    .login__title {
+      font-size: 2rem;
+    }
+
+    .login__title {
+      text-align: center;
+      font-size: var(--h1-font-size);
+      font-weight: var(--font-medium);
+      margin-bottom: 2rem;
+    }
+
+    .login__content {
+      display: grid;
+      row-gap: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .login__box {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      align-items: center;
+      column-gap: 0.75rem;
+      border-bottom: 2px solid var(--black-color);
+    }
+
+    .login__box-input {
+      position: relative;
+      width: 100%;
+    }
+
+    .login__input {
+      width: 100%;
+      padding: 1rem 0.5rem 0.5rem 0.5rem;
+      background: none;
+      color: var(--white-color);
+      font-size: var(--normal-font-size);
+      position: relative;
+      z-index: 1;
+    }
+
+    .login__label {
+      position: absolute;
+      top: 1rem;
+      left: 0.5rem;
+      color: var(--black-color);
+      font-weight: var(--font-medium);
+      pointer-events: none;
+      transition: 0.3s ease all;
+    }
+
+    .login__input:focus + .login__label,
+    .login__input:not(:placeholder-shown) + .login__label {
+      top: -0.6rem;
+      left: 0.3rem;
+      font-size: 0.75rem;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 0 0.25rem;
+      border-radius: 4px;
+    }
+
+    .login__eye {
+      position: absolute;
+      right: 0;
+      top: 18px;
+      z-index: 10;
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+
+    .login__box:nth-child(2) input {
+      padding-right: 1.8rem;
+    }
+
+    .login__button {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      background-color: #000;
+      color: var(--white-color);
+      font-weight: var(--font-medium);
+      cursor: pointer;
+      margin-bottom: 2rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .login__button:hover {
+      background-color: hsl(209, 17%, 56%);
+    }
+
+    .error-message {
+      color: #ff4444;
+      text-align: center;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    @media screen and (min-width: 576px) {
+      .login__form {
+        padding: 4rem 3rem 3.5rem;
+        border-radius: 1.5rem;
+      }
+
+      .login__title {
+        font-size: 2rem;
+      }
+    }
+
+    .back-to-login {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .back-to-login a {
+      color: var(--black-color);
+      text-decoration: underline;
+      transition: color 0.3s ease;
+    }
+
+    .back-to-login a:hover {
+      color: var(--white-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="login">
+    <div class="background-blur"></div>
+
+    <form id="staffLoginForm" class="login__form">
+      <h1 class="login__title">Staff Login Page</h1>
+      <div class="error-message" id="errorMessage"></div>
+
+      <div class="login__content">
+        <div class="login__box">
+          <i class="bx bx-user login__icon"></i>
+          <div class="login__box-input">
+            <input type="email" id="email" required class="login__input" placeholder=" " />
+            <label class="login__label">Email</label>
+          </div>
+        </div>
+
+        <div class="login__box">
+          <i class="ri-lock-2-line login__icon"></i>
+          <div class="login__box-input">
+            <input type="password" id="login-pass" required class="login__input" placeholder=" " />
+            <label class="login__label">Password</label>
+            <i class="ri-eye-off-line login__eye" id="login-eye"></i>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="login__button">Login</button>
+      
+      <div class="back-to-login">
+        <a href="login.html">Back to Student Login</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const showHiddenPass = (loginPass, loginEye) => {
+      const input = document.getElementById(loginPass);
+      const iconEye = document.getElementById(loginEye);
+
+      iconEye.addEventListener("click", () => {
+        if (input.type === "password") {
+          input.type = "text";
+          iconEye.classList.add("ri-eye-line");
+          iconEye.classList.remove("ri-eye-off-line");
+        } else {
+          input.type = "password";
+          iconEye.classList.remove("ri-eye-line");
+          iconEye.classList.add("ri-eye-off-line");
+        }
+      });
+    };
+
+    showHiddenPass("login-pass", "login-eye");
+
+    // Staff Login Handler
+    document.getElementById("staffLoginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("login-pass").value;
+      const errorMessage = document.getElementById("errorMessage");
+
+      // Reset error message
+      errorMessage.style.display = 'none';
+      
+      fetch("http://localhost:3000/stafflogin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password })
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Invalid credentials");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          // First store the staff email
+          localStorage.setItem('staffEmail', data.staffEmail);
+          
+          // Then redirect to success page with a small delay
+          setTimeout(() => {
+            window.location.href = 'staffIndex.html';
+          }, 1000);
+
+          // Show success message while redirecting
+          errorMessage.style.color = '#00ff00';
+          errorMessage.textContent = "Login successful! Redirecting...";
+          errorMessage.style.display = 'block';
+        })
+        .catch((err) => {
+          // Show error message
+          errorMessage.textContent = "Invalid email or password";
+          errorMessage.style.display = 'block';
+          console.error("Login error:", err);
+        });
+    });
+</script>
+</body>
+</html>

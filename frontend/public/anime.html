@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anime Genre</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes slide {
+      from { transform: translateX(100vw); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .float-animate {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .slide-in {
+      animation: slide 1s ease-out forwards;
+    }
+
+    @keyframes bounce-in {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .animate-bounce-in {
+      animation: bounce-in 0.4s ease forwards;
+    }
+
+    .animate-ping-slow {
+      animation: ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-purple-700 to-purple-600 min-h-screen text-white px-4 py-8">
+
+  <!-- Sidebar -->
+  <div id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-gray-800 p-6 space-y-6 shadow-2xl transform -translate-x-full transition-transform duration-300 z-50">
+    <h2 class="text-2xl font-bold text-red-400">Quick Links</h2>
+    <ul class="space-y-4 text-lg">
+      <li><a href="about.html" class="hover:text-red-300">📘 About</a></li>
+      <li><a href="guidelines.html" class="hover:text-red-300">📋 Guidelines</a></li>
+      <li><a href="management.html" class="hover:text-red-300">📁 Management</a></li>
+      <li><a href="moreinfo.html" class="hover:text-red-300">ℹ️ More Info</a></li>
+      <li><a onclick="logout()" class="hover:text-red-300 cursor-pointer">🚪 Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- Sidebar Button -->
+  <button onclick="toggleSidebar()" class="fixed top-6 left-6 z-50 bg-purple-500 hover:bg-purple-600 text-black px-4 py-2 rounded-xl shadow-lg transition">
+    ☰ Quick Links
+  </button>
+
+  <!-- Go Back -->
+  <button onclick="window.location.href='index.html'" class="fixed top-20 left-6 px-4 py-2 bg-purple-700 hover:bg-purple-900 text-black font-bold rounded-xl shadow-lg transition duration-300">
+    ← Go Back Home
+  </button>
+
+  <!-- Genre Header -->
+  <div class="flex flex-col items-center justify-center mb-12">
+    <div class="w-40 h-40 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full shadow-xl flex items-center justify-center float-animate">
+      <img src="https://img.icons8.com/?size=160&id=EogUzg3Whg7w&format=png" alt="Anime" class="w-25 h-25"/>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-extrabold mt-4 text-purple-400">Anime Books</h1>
+  </div>
+
+  <!-- Books List -->
+  <div id="books-list" class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto slide-in"></div>
+
+  <script>
+    async function fetchBooks() {
+      try {
+        const response = await fetch('/api/genre/anime');
+        const books = await response.json();
+        const booksList = document.getElementById('books-list');
+
+        books.forEach(book => {
+          const bookCard = document.createElement('div');
+          bookCard.classList.add(
+            'book-item',
+            'bg-gray-900',
+            'rounded-xl',
+            'p-6',
+            'shadow-2xl',
+            'hover:scale-105',
+            'transition-transform',
+            'duration-300',
+            'relative'
+          );
+
+          bookCard.innerHTML = `
+            <div class="relative group">
+              <img src="${book.BookCover}" alt="${book.BookTitle}" class="rounded-lg mb-4 w-full h-48 object-cover">
+              <div class="absolute top-2 left-2 bg-black bg-opacity-70 text-white text-sm px-2 py-1 rounded hidden group-hover:block">
+                ${book.Status}
+              </div>
+            </div>
+            <h2 class="text-2xl font-bold text-purple-300 mb-2">${book.BookTitle}</h2>
+            ${
+              book.Status === 'Borrowed'
+                ? `<button disabled class="bg-gray-500 text-white px-4 py-2 rounded cursor-not-allowed">Borrowed</button>`
+                : `<button id="book-${book.BookISBN}" onclick="confirmBooking('${book.BookTitle}', 'book-${book.BookISBN}', '${book.BookISBN}')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Book Now</button>`
+            }
+          `;
+
+          booksList.appendChild(bookCard);
+        });
+      } catch (error) {
+        console.error('Error fetching books:', error);
+      }
+    }
+
+    window.onload = fetchBooks;
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('-translate-x-full');
+    }
+
+    function logout() {
+      alert('Logout functionality to be implemented!');
+    }
+
+    function confirmBooking(bookName, buttonId, bookISBN) {
+      showModal(
+        `Do you want to borrow "<strong>${bookName}</strong>"?`,
+        "Yes",
+        "No",
+        () => borrowBook(bookISBN, buttonId)
+      );
+    }
+
+    async function borrowBook(bookISBN, buttonId) {
+      const currentStudentId = localStorage.getItem('StudentID');
+      if (!currentStudentId) {
+        alert('You need to be logged in to borrow a book!');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/borrow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            bookISBN: bookISBN,
+            studentID: currentStudentId,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          const bookName = document.getElementById(buttonId).closest('.book-item').querySelector('h2').textContent;
+          showSuccessPopup(bookName, buttonId, data);
+        } else {
+          alert(data.message || 'Failed to borrow the book.');
+        }
+      } catch (error) {
+        console.error('Borrow Error:', error);
+        alert('Something went wrong while borrowing.');
+      }
+    }
+
+    function showSuccessPopup(bookName, buttonId, data) {
+      const issueDate = new Date(data.issueDate).toDateString();
+      const returnDate = new Date(data.returnDate).toDateString();
+
+      showModal(
+        `<div class="flex justify-center mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500 animate-ping-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <div class="text-lg font-semibold">Successfully booked <strong>"${bookName}"</strong>!</div>
+        <div class="text-sm mt-2">📅 <strong>Issue Date:</strong> ${issueDate}</div>
+        <div class="text-sm">📅 <strong>Return Date:</strong> ${returnDate}</div>
+        <div class="text-xs mt-2 text-red-600 font-semibold">⚠️ ${data.lateFeeNote}</div>`,
+        "OK",
+        "Cancel",
+        () => showLoadingOverlay(buttonId)
+      );
+    }
+  
+    function showLoadingOverlay(buttonId) {
+      const overlay = document.createElement("div");
+      overlay.className = "fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50";
+
+      const loadingBox = document.createElement("div");
+      loadingBox.className = "bg-white p-6 rounded-xl shadow-xl text-center";
+      loadingBox.innerHTML = `
+        <div class="flex justify-center mb-4">
+          <svg class="animate-spin h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+        </div>
+        <p class="text-lg font-semibold">Processing...</p>
+      `;
+
+      overlay.appendChild(loadingBox);
+      document.body.appendChild(overlay);
+
+      setTimeout(() => {
+        document.body.removeChild(overlay);
+        updateButtonToNotAvailable(buttonId);
+      }, 2000);
+    }
+
+    function updateButtonToNotAvailable(buttonId) {
+      const button = document.getElementById(buttonId);
+      button.textContent = "Borrowed";
+      button.classList.remove("bg-blue-500", "hover:bg-blue-600");
+      button.classList.add("bg-gray-500", "cursor-not-allowed");
+      button.disabled = true;
+    }
+
+    function showModal(messageHtml, yesText, noText, onYes) {
+      const overlay = document.createElement("div");
+      overlay.className = "fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50";
+
+      const modal = document.createElement("div");
+      modal.className = "bg-white text-black p-8 rounded-xl shadow-2xl max-w-md w-full text-center animate-bounce-in";
+      modal.innerHTML = `
+        <div class="mb-4">${messageHtml}</div>
+        <div class="flex justify-center gap-4">
+          <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition" id="yesBtn">${yesText}</button>
+          <button class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition" id="noBtn">${noText}</button>
+        </div>
+      `;
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+
+      document.getElementById("yesBtn").onclick = () => {
+        document.body.removeChild(overlay);
+        onYes();
+      };
+      document.getElementById("noBtn").onclick = () => document.body.removeChild(overlay);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Registration Page</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
+
+    :root {
+      --white-color: hsl(0, 0%, 100%);
+      --black-color: hsl(0, 0%, 0%);
+      --dark-color: hsl(210, 20%, 20%);
+      --body-font: "Poppins", sans-serif;
+      --h1-font-size: 1.75rem;
+      --normal-font-size: 1rem;
+      --small-font-size: 0.813rem;
+      --font-medium: 500;
+    }
+
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      font-family: var(--body-font);
+      background-image: url('book.png');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: var(--white-color);
+    }
+
+    .background-blur {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background-size: cover;
+      background-position: center;
+      filter: blur(4px);
+      z-index: -1;
+    }
+
+    .form-container {
+      background-color: rgba(0, 0, 0, 0.7);
+      border: 3px solid var(--black-color);
+      padding: 2.5rem 2rem;
+      border-radius: 1rem;
+      width: 400px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      margin-top: 300px;
+      position: relative;
+      z-index: 1;
+    }
+
+    h2 {
+      font-size: var(--h1-font-size);
+      font-weight: var(--font-medium);
+      margin-bottom: 1.5rem;
+      color: var(--white-color);
+    }
+
+    .box {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.2rem;
+      text-align: left;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.8rem;
+      background: none;
+      color: var(--white-color);
+      border: 2px solid var(--white-color);
+      border-radius: 5px;
+      font-size: var(--normal-font-size);
+    }
+
+    label {
+      font-weight: var(--font-medium);
+      margin-bottom: 0.3rem;
+      display: block;
+      color: var(--white-color);
+    }
+
+    .show-password {
+      margin-top: 10px;
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      background-color: var(--white-color);
+      color: var(--black-color);
+      font-weight: var(--font-medium);
+      cursor: pointer;
+      margin-top: 1rem;
+      border: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-button:hover {
+      background-color: hsl(210, 100%, 80%);
+    }
+
+    .register {
+      margin-top: 1rem;
+    }
+
+    .register a {
+      color: var(--white-color);
+      font-weight: var(--font-medium);
+    }
+
+    /* Loader Overlay */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .loader {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .valid-input {
+      border-color: green !important;
+    }
+
+    .invalid-input {
+      border-color: red !important;
+    }
+
+    .password-requirements {
+      text-align: left;
+      font-size: var(--small-font-size);
+      margin-top: 5px;
+      color: #ccc;
+    }
+
+    .requirement {
+      margin-top: 3px;
+    }
+
+    .met {
+      color: green;
+    }
+
+    .not-met {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="background-blur"></div>
+
+  <!-- Loader -->
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="loader"></div>
+  </div>
+
+  <div class="form-container">
+    <h2>Student Registration</h2>
+    <form id="registrationForm">
+      <div class="box">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" placeholder="Enter Full Name" required />
+      </div>
+      <div class="box">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter Email (@com or @in domain)" pattern="[^@\s]+@[^@\s]+\.(com|in)$" title="Please enter a valid email with .com or .in domain" required />
+      </div>
+      <div class="box">
+        <label for="dateOfBirth">Date of Birth</label>
+        <input type="date" id="dateOfBirth" required min="1985-01-01" max="2025-12-31" />
+      </div>
+      <div class="box">
+        <label for="phoneNumber">Phone Number</label>
+        <input type="tel" id="phoneNumber" placeholder="Enter 10 digit Phone Number" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits" required />
+      </div>
+      <div class="box">
+        <label for="gender">Gender</label>
+        <select id="gender" required>
+          <option value="" disabled selected>Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="box">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Min 6 chars with uppercase, number & special char" pattern="(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':&quot;\\|,.<>\/?])(.{6,})" title="Password must be at least 6 characters with at least one uppercase letter, one number, and one special character" required />
+        <div class="password-requirements">
+          <p>Password must contain:</p>
+          <div id="length" class="requirement not-met">At least 6 characters</div>
+          <div id="uppercase" class="requirement not-met">At least 1 uppercase letter</div>
+          <div id="number" class="requirement not-met">At least 1 number</div>
+          <div id="special" class="requirement not-met">At least 1 special character</div>
+        </div>
+      </div>
+      <div class="box">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password (must match)" required />
+      </div>
+      <div class="show-password">
+        <input type="checkbox" id="showPassword" /> Show Password
+      </div>
+      <button type="submit" class="submit-button">Register</button>
+      <p class="register">
+        Already have an account? <a href="login.html">Login</a>
+      </p>
+    </form>
+  </div>
+
+  <script>
+    // Password Toggle
+    const showPasswordCheckbox = document.getElementById('showPassword');
+    const passwordField = document.getElementById('password');
+    const confirmPasswordField = document.getElementById('confirmPassword');
+    const emailField = document.getElementById('email');
+    const phoneField = document.getElementById('phoneNumber');
+
+    // Password strength requirements elements
+    const lengthReq = document.getElementById('length');
+    const uppercaseReq = document.getElementById('uppercase');
+    const numberReq = document.getElementById('number');
+    const specialReq = document.getElementById('special');
+
+    showPasswordCheckbox.addEventListener('change', function () {
+      const type = this.checked ? 'text' : 'password';
+      passwordField.type = type;
+      confirmPasswordField.type = type;
+    });
+
+    // Email validation
+    emailField.addEventListener('input', function() {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.(com|in)$/;
+      if (emailRegex.test(this.value)) {
+        this.classList.remove('invalid-input');
+        this.classList.add('valid-input');
+      } else {
+        this.classList.remove('valid-input');
+        this.classList.add('invalid-input');
+      }
+    });
+
+    // Phone validation
+    phoneField.addEventListener('input', function() {
+      // Remove any non-digit characters
+      this.value = this.value.replace(/\D/g, '');
+      
+      // Check if it's exactly 10 digits
+      const phoneRegex = /^\d{10}$/;
+      if (phoneRegex.test(this.value)) {
+        this.classList.remove('invalid-input');
+        this.classList.add('valid-input');
+      } else {
+        this.classList.remove('valid-input');
+        if (this.value.length > 0) {
+          this.classList.add('invalid-input');
+        } else {
+          this.classList.remove('invalid-input');
+        }
+      }
+    });
+
+    // Password validation
+    passwordField.addEventListener('input', function() {
+      const password = this.value;
+      
+      // Validate length (6+ chars)
+      if (password.length >= 6) {
+        lengthReq.classList.remove('not-met');
+        lengthReq.classList.add('met');
+      } else {
+        lengthReq.classList.remove('met');
+        lengthReq.classList.add('not-met');
+      }
+      
+      // Validate uppercase
+      if (/[A-Z]/.test(password)) {
+        uppercaseReq.classList.remove('not-met');
+        uppercaseReq.classList.add('met');
+      } else {
+        uppercaseReq.classList.remove('met');
+        uppercaseReq.classList.add('not-met');
+      }
+      
+      // Validate number
+      if (/\d/.test(password)) {
+        numberReq.classList.remove('not-met');
+        numberReq.classList.add('met');
+      } else {
+        numberReq.classList.remove('met');
+        numberReq.classList.add('not-met');
+      }
+      
+      // Validate special character
+      if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+        specialReq.classList.remove('not-met');
+        specialReq.classList.add('met');
+      } else {
+        specialReq.classList.remove('met');
+        specialReq.classList.add('not-met');
+      }
+      
+      // Overall validation
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])(.{6,})$/;
+      if (passwordRegex.test(password)) {
+        this.classList.remove('invalid-input');
+        this.classList.add('valid-input');
+      } else {
+        this.classList.remove('valid-input');
+        if (password.length > 0) {
+          this.classList.add('invalid-input');
+        } else {
+          this.classList.remove('invalid-input');
+        }
+      }
+    });
+
+    // Confirm password validation
+    confirmPasswordField.addEventListener('input', function() {
+      if (this.value === passwordField.value) {
+        this.classList.remove('invalid-input');
+        this.classList.add('valid-input');
+      } else {
+        this.classList.remove('valid-input');
+        if (this.value.length > 0) {
+          this.classList.add('invalid-input');
+        } else {
+          this.classList.remove('invalid-input');
+        }
+      }
+    });
+
+    // Loader + Registration Logic
+    const form = document.getElementById('registrationForm');
+    const loaderOverlay = document.getElementById('loaderOverlay');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const dateOfBirth = document.getElementById('dateOfBirth').value;
+      const phoneNumber = document.getElementById('phoneNumber').value;
+      const gender = document.getElementById('gender').value;
+      const password = document.getElementById('password').value;
+      
+      const data = {
+        fullName,
+        email,
+        dateOfBirth,
+        phoneNumber,
+        gender,
+        password,
+      };
+
+      // Validate email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.(com|in)$/;
+      if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address with @com or @in domain');
+        loaderOverlay.style.display = 'none';
+        return;
+      }
+
+      // Validate phone number (exactly 10 digits)
+      const phoneRegex = /^\d{10}$/;
+      if (!phoneRegex.test(phoneNumber)) {
+        alert('Phone number must be exactly 10 digits');
+        loaderOverlay.style.display = 'none';
+        return;
+      }
+
+      // Validate password (min 6 chars, 1 uppercase, 1 number, 1 special char)
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])(.{6,})$/;
+      if (!passwordRegex.test(password)) {
+        alert('Password must be at least 6 characters with at least one uppercase letter, one number, and one special character');
+        loaderOverlay.style.display = 'none';
+        return;
+      }
+
+      // Validate password confirmation
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        loaderOverlay.style.display = 'none';
+        return;
+      }
+
+      // Show loader
+      loaderOverlay.style.display = 'flex';
+
+      // Send registration data to backend
+      fetch('http://localhost:3000/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Registration successful:', data);
+        alert('Registration successful! Please login.');
+        window.location.href = 'login.html'; // Redirect to login page
+      })
+      .catch((error) => {
+        console.error('Error during registration:', error);
+        alert('Error registering user. Please try again.');
+      })
+      .finally(() => {
+        // Hide loader after process
+        loaderOverlay.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+</html>

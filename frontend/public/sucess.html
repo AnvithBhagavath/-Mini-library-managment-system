@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Success</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-color: #282c34;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      font-family: 'Poppins', Arial, sans-serif;
+      text-align: center;
+    }
+
+    .success-message {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #00ffcc;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 10px;
+    }
+
+    .message-note {
+      font-size: 1rem;
+      color: #cccccc;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    @keyframes spin {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="success-message">
+    <h1>logged in  successfully ✅</h1>
+  </div>
+
+  <div class="loader"></div>
+  <p class="message-note">Redirecting to the library home page...</p>
+
+  <script>
+    // Redirect after 3.5 seconds
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 3500);
+  </script>
+
+</body>
+</html>
