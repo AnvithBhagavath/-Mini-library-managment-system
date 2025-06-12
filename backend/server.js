@@ -7,12 +7,13 @@ const bcrypt= require('bcrypt');
 const session = require('express-session');
 const nodemailer = require('nodemailer');
 
+require('dotenv').config();
 // Email configuration
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: process.env.EMAIL_SERVICE,
     auth: {
-        user: 'scbhagavath@gmail.com',
-        pass: 'ycmk ziet ccng hxgi'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -20,7 +21,7 @@ const transporter = nodemailer.createTransport({
 async function sendEmail(to, subject, text) {
     try {
         const mailOptions = {
-            from: 'scbhagavath@gmail.com',
+            from: process.env.EMAIL_USER,
             to: to,
             subject: subject,
             text: text
@@ -35,14 +36,14 @@ async function sendEmail(to, subject, text) {
 
 const app = express();
 app.use(express.json());
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // MySQL Connection
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Admin',
-    database: 'lms'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 // Connect to MySQL
@@ -55,14 +56,17 @@ db.connect((err) => {
 });
 
 // Basic middleware
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true
+}));
 app.use(bodyParser.json());
 app.use(session({
-    secret: '4c9e1c447f42b4f30e6b59b6e6e1b9ab4d2b157ce26f2b74a2e44a7dc6dcf369',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 1000 * 60 * 60 // 1 hour
+        maxAge: parseInt(process.env.SESSION_MAX_AGE)
     }
 }));
 
